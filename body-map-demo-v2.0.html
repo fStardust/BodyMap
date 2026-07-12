@@ -3308,7 +3308,7 @@
             '四肢': '.dot-arm-l, .dot-arm-r, .dot-leg-l, .dot-leg-r'
         };
 
-        // 多选症状切换（保留函数避免报错，但首页不再使用症状面板）
+        // 多选症状切换
         function toggleSymptom(elem, symptom) {
             elem.classList.toggle('selected');
             if (elem.classList.contains('selected')) {
@@ -3342,9 +3342,35 @@
             showToast('已选症状：' + homeSelectedSymptoms.join('、') + '，点击身体点位标记');
         }
 
-        // 点击身体点位 — 直接展示部位详情弹窗
+        // 点击身体点位 — 有症状选中时生成临时记录，否则展示详情
         function showBodyPartDetail(part) {
-            showPartInfoPopup(part);
+            // 如果没有选中任何症状，走详情展示逻辑
+            if (homeSelectedSymptoms.length === 0) {
+                showPartInfoPopup(part);
+                return;
+            }
+
+            // 生成临时记录，复用 currentPainData 的数据结构 { part, types, level, note }
+            const existing = homePendingRecords.findIndex(r => r.part === part);
+            if (existing !== -1) {
+                // 合并症状
+                homeSelectedSymptoms.forEach(symptom => {
+                    if (!homePendingRecords[existing].types.includes(symptom)) {
+                        homePendingRecords[existing].types.push(symptom);
+                    }
+                });
+                showToast('已为「' + part + '」追加症状');
+            } else {
+                homePendingRecords.push({
+                    part: part,
+                    types: [...homeSelectedSymptoms],
+                    level: 3,
+                    note: ''
+                });
+                showToast('已标记「' + part + '」：' + homeSelectedSymptoms.join('、'));
+            }
+
+            renderHomePendingRecords();
         }
 
         // 状态概览标签点击 → 展示对应部位详情
@@ -3445,7 +3471,7 @@
             }, 1500);
         }
 
-        // 原来的部位详情弹窗（无症状选中时使用）
+        // 部位详情弹窗
         function showPartInfoPopup(part) {
             const detail = bodyPartDetailMap[part];
             if (!detail) return;
@@ -3470,6 +3496,7 @@
             detailEl.style.left = pos.x + '%';
             detailEl.style.top = pos.y + '%';
             detailEl.style.transform = 'translate(-50%, 0)';
+            detailEl.style.zIndex = '60';
 
             detailEl.innerHTML = `
                 <div class="detail-part-title">${part}</div>
@@ -3490,7 +3517,7 @@
 
             setTimeout(() => {
                 const closeHandler = (e) => {
-                    if (!detailEl.contains(e.target) && !e.target.closest('.body-dot') && !e.target.closest('.risk-warning-triangle')) {
+                    if (!detailEl.contains(e.target) && !e.target.closest('.body-dot') && !e.target.closest('.risk-warning-triangle') && !e.target.closest('.status-part-tag')) {
                         detailEl.remove();
                         document.removeEventListener('click', closeHandler);
                     }
