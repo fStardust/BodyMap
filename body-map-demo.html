@@ -1209,6 +1209,15 @@
             filter: drop-shadow(0 0 4px currentColor);
         }
 
+        .body-dot.symptom-active {
+            animation: dotGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes dotGlow {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.35); }
+        }
+
         .pulse-dot {
             animation: dotPulse 2s ease-in-out infinite;
         }
@@ -1398,6 +1407,81 @@
             background: rgba(250, 204, 21, 0.5);
             transform: rotate(-3deg);
             border-radius: 2px;
+        }
+
+        /* 临时记录卡片区域 */
+        .home-pending-records {
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pending-card {
+            background: #FFFDF5;
+            border: 2px solid #3D3D3D;
+            border-radius: 14px 16px 13px 15px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            box-shadow: 2px 3px 0px #3D3D3D;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            animation: detailPop 0.25s ease;
+        }
+
+        .pending-card:nth-child(odd) { transform: rotate(-0.5deg); }
+        .pending-card:nth-child(even) { transform: rotate(0.7deg); }
+
+        .pending-card-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .pending-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #3D3D3D;
+            flex-shrink: 0;
+        }
+
+        .pending-part {
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            font-weight: 700;
+            color: #3D3D3D;
+        }
+
+        .pending-symptoms {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .pending-remove {
+            background: none;
+            border: 1.5px solid #3D3D3D;
+            border-radius: 8px 10px 7px 9px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #EF4444;
+            font-weight: 700;
+            box-shadow: 1px 1px 0px #3D3D3D;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .pending-remove:active {
+            transform: translate(1px, 1px);
+            box-shadow: 0px 0px 0px #3D3D3D;
         }
 
         /* 底部三按钮 */
@@ -1932,19 +2016,19 @@
                 <!-- 左侧症状选择面板 -->
                 <div class="symptom-panel">
                     <div class="symptom-panel-title">症状</div>
-                    <div class="symptom-tag selected" onclick="selectSymptom(this, '酸痛')">
+                    <div class="symptom-tag" onclick="toggleSymptom(this, '酸痛')" data-symptom="酸痛">
                         <span class="symptom-dot"></span>
                         <span>酸痛</span>
                     </div>
-                    <div class="symptom-tag" onclick="selectSymptom(this, '紧绷')">
+                    <div class="symptom-tag" onclick="toggleSymptom(this, '紧绷')" data-symptom="紧绷">
                         <span class="symptom-dot"></span>
                         <span>紧绷</span>
                     </div>
-                    <div class="symptom-tag" onclick="selectSymptom(this, '刺痛')">
+                    <div class="symptom-tag" onclick="toggleSymptom(this, '刺痛')" data-symptom="刺痛">
                         <span class="symptom-dot"></span>
                         <span>刺痛</span>
                     </div>
-                    <div class="symptom-tag" onclick="selectSymptom(this, '乏力')">
+                    <div class="symptom-tag" onclick="toggleSymptom(this, '乏力')" data-symptom="乏力">
                         <span class="symptom-dot"></span>
                         <span>乏力</span>
                     </div>
@@ -2098,9 +2182,12 @@
                 </div>
             </div>
 
+            <!-- 临时记录卡片区域（选症状+点部位后生成） -->
+            <div id="home-pending-records" class="home-pending-records" style="display: none;"></div>
+
             <!-- 底部三按钮 -->
             <div class="home-actions">
-                <button class="btn btn-primary" onclick="switchPage('page-record')">
+                <button class="btn btn-primary" onclick="submitHomeRecords()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -3112,13 +3199,245 @@
         // 角色交互逻辑
         // ============================================
 
-        // 首页症状标签选择
-        function selectSymptom(elem, type) {
-            document.querySelectorAll('.symptom-tag').forEach(tag => {
-                tag.classList.remove('selected');
+        // ============================================
+        // 首页交互闭环逻辑
+        // ============================================
+
+        // 症状→颜色映射
+        const symptomColorMap = {
+            '酸痛': '#3B82F6',
+            '紧绷': '#FACC15',
+            '刺痛': '#EF4444',
+            '乏力': '#F97316'
+        };
+
+        // 首页临时记录数据（复用 currentPainData 结构）
+        let homeSelectedSymptoms = [];
+        let homePendingRecords = [];
+
+        // 部位→SVG圆点选择器映射
+        const partDotSelectorMap = {
+            '头部': '.dot-head',
+            '肩颈': '.dot-shoulder',
+            '胸腹': '.dot-chest, .dot-upper, .dot-upper2',
+            '腰': '.dot-waist, .dot-waist2',
+            '四肢': '.dot-arm-l, .dot-arm-r, .dot-leg-l, .dot-leg-r'
+        };
+
+        // 多选症状切换
+        function toggleSymptom(elem, symptom) {
+            elem.classList.toggle('selected');
+            if (elem.classList.contains('selected')) {
+                if (!homeSelectedSymptoms.includes(symptom)) {
+                    homeSelectedSymptoms.push(symptom);
+                }
+            } else {
+                homeSelectedSymptoms = homeSelectedSymptoms.filter(s => s !== symptom);
+            }
+            updateBodyDotColors();
+        }
+
+        // 根据选中症状更新身体点位颜色
+        function updateBodyDotColors() {
+            // 重置所有圆点为默认色
+            document.querySelectorAll('.body-dot').forEach(dot => {
+                dot.classList.remove('symptom-active');
+                dot.style.filter = '';
             });
-            elem.classList.add('selected');
-            showToast('已选择「' + type + '」，点击记录感受去标记部位');
+
+            if (homeSelectedSymptoms.length === 0) return;
+
+            // 取最后选中的症状颜色作为高亮色
+            const lastSymptom = homeSelectedSymptoms[homeSelectedSymptoms.length - 1];
+            const color = symptomColorMap[lastSymptom];
+
+            // 点亮所有圆点，加上发光效果
+            document.querySelectorAll('.body-dot').forEach(dot => {
+                dot.classList.add('symptom-active');
+                dot.style.filter = `drop-shadow(0 0 6px ${color})`;
+                dot.setAttribute('data-symptom-color', color);
+            });
+
+            showToast('已选症状：' + homeSelectedSymptoms.join('、') + '，点击身体点位标记');
+        }
+
+        // 点击身体点位 — 生成临时记录卡片
+        function showBodyPartDetail(part) {
+            // 如果没有选中任何症状，走原来的详情展示逻辑
+            if (homeSelectedSymptoms.length === 0) {
+                showPartInfoPopup(part);
+                return;
+            }
+
+            // 生成临时记录，复用 currentPainData 的数据结构 { part, types, level, note }
+            // 检查是否已存在该部位的记录
+            const existing = homePendingRecords.findIndex(r => r.part === part);
+            if (existing !== -1) {
+                // 合并症状
+                homeSelectedSymptoms.forEach(symptom => {
+                    if (!homePendingRecords[existing].types.includes(symptom)) {
+                        homePendingRecords[existing].types.push(symptom);
+                    }
+                });
+                showToast('已为「' + part + '」追加症状');
+            } else {
+                homePendingRecords.push({
+                    part: part,
+                    types: [...homeSelectedSymptoms],
+                    level: 3,
+                    note: ''
+                });
+                showToast('已标记「' + part + '」：' + homeSelectedSymptoms.join('、'));
+            }
+
+            renderHomePendingRecords();
+        }
+
+        // 渲染临时记录卡片
+        function renderHomePendingRecords() {
+            const container = document.getElementById('home-pending-records');
+            if (!container) return;
+
+            if (homePendingRecords.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            container.innerHTML = homePendingRecords.map((record, index) => {
+                const lastSymptom = record.types[record.types.length - 1];
+                const dotColor = symptomColorMap[lastSymptom] || '#22C55E';
+                return `
+                    <div class="pending-card">
+                        <div class="pending-card-info">
+                            <div class="pending-dot" style="background: ${dotColor};"></div>
+                            <div>
+                                <div class="pending-part">${record.part}</div>
+                                <div class="pending-symptoms">${record.types.join('、')} · ${record.level}级</div>
+                            </div>
+                        </div>
+                        <button class="pending-remove" onclick="removePendingRecord(${index})">×</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 删除临时记录
+        function removePendingRecord(index) {
+            homePendingRecords.splice(index, 1);
+            renderHomePendingRecords();
+            showToast('已删除该条记录');
+        }
+
+        // 提交首页记录 — 写入现有数据结构
+        function submitHomeRecords() {
+            if (homePendingRecords.length === 0) {
+                // 没有标记任何部位，跳转到记录页让用户手动录入
+                switchPage('page-record');
+                return;
+            }
+
+            // 将临时记录写入 currentPainData（复用现有结构）
+            currentPainData = [...homePendingRecords];
+            currentRecordId = null;
+
+            // 获取上次记录的体重/BMI，没有就用默认值
+            const records = getRecords();
+            let weight = 65;
+            let bmi = 22.5;
+            if (records.length > 0) {
+                const lastRecord = records[records.length - 1];
+                weight = lastRecord.weight;
+                bmi = lastRecord.bmi;
+            }
+
+            // 构建记录，复用现有 saveRecord 的数据结构
+            const record = {
+                id: Date.now().toString(),
+                date: getTodayString(),
+                weight: weight,
+                bmi: bmi,
+                emotion: currentEmotion || 3,
+                pain: [...currentPainData]
+            };
+
+            // 写入 localStorage
+            records.push(record);
+            saveRecords(records);
+
+            // 清空首页临时数据
+            homePendingRecords = [];
+            homeSelectedSymptoms = [];
+            document.querySelectorAll('.symptom-tag').forEach(tag => tag.classList.remove('selected'));
+            document.querySelectorAll('.body-dot').forEach(dot => {
+                dot.classList.remove('symptom-active');
+                dot.style.filter = '';
+            });
+            renderHomePendingRecords();
+
+            showToast('记录保存成功！');
+
+            // 刷新首页历史列表
+            loadHomeHistory();
+
+            // 1.5秒后跳转到记录详情页
+            setTimeout(() => {
+                switchPage('page-record');
+            }, 1500);
+        }
+
+        // 原来的部位详情弹窗（无症状选中时使用）
+        function showPartInfoPopup(part) {
+            const detail = bodyPartDetailMap[part];
+            if (!detail) return;
+
+            const existing = document.querySelector('.body-part-detail');
+            if (existing) existing.remove();
+
+            const container = document.querySelector('.radial-center');
+            if (!container) return;
+
+            const posMap = {
+                '头部': { x: 50, y: 10 },
+                '肩颈': { x: 50, y: 28 },
+                '胸腹': { x: 50, y: 45 },
+                '腰': { x: 50, y: 62 },
+                '四肢': { x: 25, y: 50 }
+            };
+            const pos = posMap[part] || { x: 50, y: 50 };
+
+            const detailEl = document.createElement('div');
+            detailEl.className = 'body-part-detail';
+            detailEl.style.left = pos.x + '%';
+            detailEl.style.top = pos.y + '%';
+            detailEl.style.transform = 'translate(-50%, 0)';
+
+            detailEl.innerHTML = `
+                <div class="detail-part-title">${part}</div>
+                <div style="text-align: center;">
+                    <span class="detail-status status-${detail.status}">${detail.statusText}</span>
+                </div>
+                ${detail.items.map(item => `
+                    <div class="detail-item">
+                        <strong>${item.label}：</strong>${item.value}
+                    </div>
+                `).join('')}
+                <div style="text-align: right; margin-top: 8px;">
+                    <span style="font-size: 11px; color: #22C55E; cursor: pointer; font-weight: 600;" onclick="switchPage('page-record')">记录感受 →</span>
+                </div>
+            `;
+
+            container.appendChild(detailEl);
+
+            setTimeout(() => {
+                const closeHandler = (e) => {
+                    if (!detailEl.contains(e.target) && !e.target.closest('.body-dot') && !e.target.closest('.risk-warning-triangle')) {
+                        detailEl.remove();
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+                document.addEventListener('click', closeHandler);
+            }, 10);
         }
 
         // 身体部位详情数据 - 复用现有结构
@@ -3169,63 +3488,6 @@
                 ]
             }
         };
-
-        // 显示身体部位详情浮层
-        function showBodyPartDetail(part) {
-            const detail = bodyPartDetailMap[part];
-            if (!detail) return;
-
-            // 移除已有浮层
-            const existing = document.querySelector('.body-part-detail');
-            if (existing) existing.remove();
-
-            const container = document.querySelector('.radial-center');
-            if (!container) return;
-
-            // 部位在SVG中的大致位置（映射到container的百分比）
-            const posMap = {
-                '头部': { x: 50, y: 10 },
-                '肩颈': { x: 50, y: 28 },
-                '胸腹': { x: 50, y: 45 },
-                '腰': { x: 50, y: 62 },
-                '四肢': { x: 25, y: 50 }
-            };
-            const pos = posMap[part] || { x: 50, y: 50 };
-
-            const detailEl = document.createElement('div');
-            detailEl.className = 'body-part-detail';
-            detailEl.style.left = pos.x + '%';
-            detailEl.style.top = pos.y + '%';
-            detailEl.style.transform = 'translate(-50%, 0)';
-
-            detailEl.innerHTML = `
-                <div class="detail-part-title">${part}</div>
-                <div style="text-align: center;">
-                    <span class="detail-status status-${detail.status}">${detail.statusText}</span>
-                </div>
-                ${detail.items.map(item => `
-                    <div class="detail-item">
-                        <strong>${item.label}：</strong>${item.value}
-                    </div>
-                `).join('')}
-                <div style="text-align: right; margin-top: 8px;">
-                    <span style="font-size: 11px; color: #22C55E; cursor: pointer; font-weight: 600;" onclick="switchPage('page-record')">记录感受 →</span>
-                </div>
-            `;
-
-            container.appendChild(detailEl);
-
-            // 点击外部关闭
-            setTimeout(() => {
-                const closeHandler = (e) => {
-                    if (!detailEl.contains(e.target) && !e.target.closest('.body-dot') && !e.target.closest('.risk-warning-triangle')) {
-                        detailEl.remove();
-                        document.removeEventListener('click', closeHandler);
-                    }
-                };
-                document.addEventListener('click', closeHandler);
-            }, 10);
-        }
 
         function focusBodyPart(part, elem) {
             document.querySelectorAll('.body-part-tab').forEach(tab => {
