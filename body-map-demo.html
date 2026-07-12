@@ -1158,6 +1158,125 @@
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
+        /* 身体地图可视化 - 圆点动画 */
+        .body-dot {
+            transition: transform 0.2s, filter 0.2s;
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+
+        .body-dot:hover {
+            transform: scale(1.4);
+            filter: drop-shadow(0 0 4px currentColor);
+        }
+
+        .pulse-dot {
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(249, 115, 22, 0.6)); }
+            50% { transform: scale(1.2); filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.9)); }
+        }
+
+        /* 手绘曲线动画 */
+        .body-curve {
+            stroke-dasharray: 8, 4;
+            animation: curveFlow 2s linear infinite;
+        }
+
+        @keyframes curveFlow {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: -24; }
+        }
+
+        .curve-risk {
+            animation-duration: 1.5s;
+        }
+
+        /* 警告三角动画 */
+        .risk-warning-triangle {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: warningBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes warningBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-2px) scale(1.05); }
+        }
+
+        /* 部位详情浮层 */
+        .body-part-detail {
+            position: absolute;
+            background: #FFFDF5;
+            border: 2.5px solid #3D3D3D;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 4px 5px 0px #3D3D3D, 6px 8px 16px rgba(61,61,61,0.15);
+            z-index: 50;
+            min-width: 130px;
+            animation: detailPop 0.25s ease;
+            pointer-events: auto;
+        }
+
+        @keyframes detailPop {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .body-part-detail::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 14px;
+            height: 14px;
+            background: #FFFDF5;
+            border: 2.5px solid #3D3D3D;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .detail-part-title {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            color: #22C55E;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .detail-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1.5px solid #3D3D3D;
+            box-shadow: 1px 1px 0px #3D3D3D;
+            margin-bottom: 8px;
+        }
+
+        .detail-status.status-good { background: rgba(34,197,94,0.15); color: #22C55E; }
+        .detail-status.status-mild { background: rgba(250,204,21,0.2); color: #CA8A04; }
+        .detail-status.status-risk { background: rgba(249,115,22,0.15); color: #F97316; }
+        .detail-status.status-severe { background: rgba(239,68,68,0.15); color: #EF4444; }
+
+        .detail-item {
+            font-size: 12px;
+            color: #555;
+            padding: 3px 0;
+            line-height: 1.4;
+        }
+
+        .detail-item strong {
+            color: #3D3D3D;
+        }
+
         /* 右侧数据信息卡片 */
         .info-panel {
             flex-shrink: 0;
@@ -1835,6 +1954,76 @@
                     <!-- 头发高光 -->
                     <path d="M75,18 Q82,12 90,16" stroke="#FFE082" stroke-width="2" fill="none" opacity="0.6"/>
                     <path d="M105,10 Q112,8 118,14" stroke="#FFE082" stroke-width="2" fill="none" opacity="0.6"/>
+
+                    <!-- ============================================
+                         身体地图可视化层
+                         ============================================ -->
+
+                    <!-- 从身体点位到右侧卡片的手绘曲线 -->
+                    <g class="body-curves" opacity="0.7">
+                        <!-- 肩颈 → 右侧卡片 曲线（橙红色风险） -->
+                        <path d="M 125,110 Q 150,100 175,110 Q 185,115 195,120"
+                              stroke="#F97316" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="6,3"
+                              class="body-curve curve-risk"/>
+                        <!-- 胸腹 → 右侧卡片 曲线（绿色健康） -->
+                        <path d="M 115,145 Q 140,150 165,155 Q 180,160 195,165"
+                              stroke="#22C55E" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="5,3"
+                              class="body-curve curve-activity"/>
+                        <!-- 腰部 → 下方提示 曲线（蓝色提示） -->
+                        <path d="M 120,185 Q 140,200 155,210"
+                              stroke="#3B82F6" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4,3"
+                              class="body-curve curve-hint"/>
+                        <!-- 四肢 → 左侧 曲线（黄色） -->
+                        <path d="M 42,140 Q 25,135 10,130"
+                              stroke="#FACC15" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="5,3"
+                              class="body-curve curve-limb"/>
+                    </g>
+
+                    <!-- 肩部警告三角（今日风险） -->
+                    <g class="risk-warning-triangle" onclick="showBodyPartDetail('肩颈')" style="cursor: pointer;">
+                        <path d="M 120,90 L 140,90 L 130,72 Z"
+                              fill="#F97316" stroke="#3E2723" stroke-width="1.5" stroke-linejoin="round"/>
+                        <text x="130" y="86" text-anchor="middle" font-size="10" fill="white" font-weight="bold">!</text>
+                        <circle cx="125" cy="95" r="3" fill="#F97316" stroke="#3E2723" stroke-width="1"/>
+                    </g>
+
+                    <!-- 健康度彩色圆点 - 分布在躯干和四肢 -->
+                    <g class="body-dots">
+                        <!-- 头部 - 蓝色（正常） -->
+                        <circle cx="100" cy="35" r="5" fill="#3B82F6" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-head"
+                                onclick="event.stopPropagation(); showBodyPartDetail('头部')" style="cursor: pointer;"/>
+                        <!-- 左肩 - 橙色（风险预警） -->
+                        <circle cx="75" cy="110" r="6" fill="#F97316" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-shoulder risk-dot pulse-dot"
+                                onclick="event.stopPropagation(); showBodyPartDetail('肩颈')" style="cursor: pointer;"/>
+                        <!-- 右肩 - 橙色（风险预警） -->
+                        <circle cx="125" cy="110" r="6" fill="#F97316" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-shoulder risk-dot pulse-dot"
+                                onclick="event.stopPropagation(); showBodyPartDetail('肩颈')" style="cursor: pointer;"/>
+                        <!-- 胸口 - 绿色（健康） -->
+                        <circle cx="100" cy="130" r="5" fill="#22C55E" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-chest"
+                                onclick="event.stopPropagation(); showBodyPartDetail('胸腹')" style="cursor: pointer;"/>
+                        <!-- 上腹 - 黄绿色 -->
+                        <circle cx="90" cy="150" r="4" fill="#84CC16" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-upper"
+                                onclick="event.stopPropagation(); showBodyPartDetail('胸腹')" style="cursor: pointer;"/>
+                        <circle cx="110" cy="148" r="3.5" fill="#22C55E" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-upper2"
+                                onclick="event.stopPropagation(); showBodyPartDetail('胸腹')" style="cursor: pointer;"/>
+                        <!-- 腰部 - 黄色（轻度疲劳） -->
+                        <circle cx="85" cy="180" r="4.5" fill="#FACC15" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-waist"
+                                onclick="event.stopPropagation(); showBodyPartDetail('腰')" style="cursor: pointer;"/>
+                        <circle cx="115" cy="182" r="4" fill="#F97316" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-waist2"
+                                onclick="event.stopPropagation(); showBodyPartDetail('腰')" style="cursor: pointer;"/>
+                        <!-- 左臂 - 黄色 -->
+                        <circle cx="42" cy="140" r="4" fill="#FACC15" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-arm-l"
+                                onclick="event.stopPropagation(); showBodyPartDetail('四肢')" style="cursor: pointer;"/>
+                        <!-- 右臂 - 绿色 -->
+                        <circle cx="158" cy="145" r="4" fill="#22C55E" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-arm-r"
+                                onclick="event.stopPropagation(); showBodyPartDetail('四肢')" style="cursor: pointer;"/>
+                        <!-- 左大腿 - 绿色 -->
+                        <circle cx="82" cy="200" r="4" fill="#22C55E" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-leg-l"
+                                onclick="event.stopPropagation(); showBodyPartDetail('四肢')" style="cursor: pointer;"/>
+                        <!-- 右大腿 - 蓝色 -->
+                        <circle cx="118" cy="205" r="3.5" fill="#3B82F6" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-leg-r"
+                                onclick="event.stopPropagation(); showBodyPartDetail('四肢')" style="cursor: pointer;"/>
+                    </g>
                 </svg>
                 </div>
 
@@ -2868,6 +3057,112 @@
             });
             elem.classList.add('selected');
             showToast('已选择「' + type + '」，点击记录感受去标记部位');
+        }
+
+        // 身体部位详情数据 - 复用现有结构
+        const bodyPartDetailMap = {
+            '头部': {
+                status: 'good',
+                statusText: '状态良好',
+                items: [
+                    { label: '睡眠质量', value: '良好' },
+                    { label: '头痛次数', value: '0次/周' },
+                    { label: '建议', value: '保持规律作息' }
+                ]
+            },
+            '肩颈': {
+                status: 'risk',
+                statusText: '今日风险',
+                items: [
+                    { label: '久坐时长', value: '2小时' },
+                    { label: '不适感', value: '肩颈酸胀' },
+                    { label: '建议', value: '起身活动5分钟' }
+                ]
+            },
+            '胸腹': {
+                status: 'good',
+                statusText: '状态良好',
+                items: [
+                    { label: '心肺功能', value: '正常' },
+                    { label: '消化状态', value: '良好' },
+                    { label: '建议', value: '注意饮食均衡' }
+                ]
+            },
+            '腰': {
+                status: 'mild',
+                statusText: '轻度疲劳',
+                items: [
+                    { label: '腰部状态', value: '轻度酸胀' },
+                    { label: '腰椎风险', value: '低' },
+                    { label: '建议', value: '伸展腰部肌肉' }
+                ]
+            },
+            '四肢': {
+                status: 'mild',
+                statusText: '轻度疲劳',
+                items: [
+                    { label: '手臂状态', value: '轻微紧绷' },
+                    { label: '腿部状态', value: '正常' },
+                    { label: '建议', value: '适当活动四肢' }
+                ]
+            }
+        };
+
+        // 显示身体部位详情浮层
+        function showBodyPartDetail(part) {
+            const detail = bodyPartDetailMap[part];
+            if (!detail) return;
+
+            // 移除已有浮层
+            const existing = document.querySelector('.body-part-detail');
+            if (existing) existing.remove();
+
+            const container = document.querySelector('.radial-center');
+            if (!container) return;
+
+            // 部位在SVG中的大致位置（映射到container的百分比）
+            const posMap = {
+                '头部': { x: 50, y: 10 },
+                '肩颈': { x: 50, y: 28 },
+                '胸腹': { x: 50, y: 45 },
+                '腰': { x: 50, y: 62 },
+                '四肢': { x: 25, y: 50 }
+            };
+            const pos = posMap[part] || { x: 50, y: 50 };
+
+            const detailEl = document.createElement('div');
+            detailEl.className = 'body-part-detail';
+            detailEl.style.left = pos.x + '%';
+            detailEl.style.top = pos.y + '%';
+            detailEl.style.transform = 'translate(-50%, 0)';
+
+            detailEl.innerHTML = `
+                <div class="detail-part-title">${part}</div>
+                <div style="text-align: center;">
+                    <span class="detail-status status-${detail.status}">${detail.statusText}</span>
+                </div>
+                ${detail.items.map(item => `
+                    <div class="detail-item">
+                        <strong>${item.label}：</strong>${item.value}
+                    </div>
+                `).join('')}
+                <div style="text-align: right; margin-top: 8px;">
+                    <span style="font-size: 11px; color: #22C55E; cursor: pointer; font-weight: 600;" onclick="switchPage('page-record')">记录感受 →</span>
+                </div>
+            `;
+
+            container.appendChild(detailEl);
+
+            // 点击外部关闭
+            setTimeout(() => {
+                const closeHandler = (e) => {
+                    if (!detailEl.contains(e.target) && !e.target.closest('.body-dot') && !e.target.closest('.risk-warning-triangle')) {
+                        detailEl.remove();
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+                document.addEventListener('click', closeHandler);
+            }, 10);
         }
 
         function focusBodyPart(part, elem) {
