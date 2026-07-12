@@ -1002,145 +1002,316 @@
         }
 
         /* ============================================
-           首页样式
+           首页样式 - 中心辐射式布局
            ============================================ */
-        .home-header {
-            text-align: center;
-            padding: 30px 0;
+
+        /* 顶部标题栏 */
+        .home-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
         }
 
-        .home-logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1A5C68;
-            margin-bottom: 4px;
+        .home-title {
+            font-family: 'Caveat', cursive;
+            font-size: 30px;
+            font-weight: 700;
+            color: #22C55E;
+            text-shadow: 1px 2px 0px rgba(34, 197, 94, 0.1);
         }
 
-        .home-tagline {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .home-character {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .home-character svg {
-            width: 220px;
-            height: 280px;
-        }
-
-        .risk-panel {
-            position: absolute;
-            right: 20px;
-            top: 120px;
-            background: white;
-            border-radius: 12px;
-            padding: 12px;
-            width: 120px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        .risk-capsule {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+            color: white;
             font-size: 12px;
+            font-weight: 600;
+            border: 2px solid #3D3D3D;
+            box-shadow: 2px 2px 0px #3D3D3D;
+            cursor: pointer;
+            transition: all 0.15s;
         }
 
-        .risk-panel-title {
-            font-weight: bold;
-            color: #FF7A45;
-            margin-bottom: 8px;
+        .risk-capsule:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #3D3D3D;
+        }
+
+        .risk-capsule-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        /* 中心辐射主体 */
+        .radial-body {
             display: flex;
             align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 左侧症状面板 */
+        .symptom-panel {
+            flex-shrink: 0;
+            width: 92px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .symptom-panel-title {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            font-weight: 600;
+            color: #22C55E;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+
+        .symptom-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 8px;
+            border-radius: 14px;
+            background: #FFFDF5;
+            border: 2px solid #3D3D3D;
+            box-shadow: 2px 2px 0px #3D3D3D;
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: left;
+        }
+
+        .symptom-tag:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #3D3D3D;
+        }
+
+        .symptom-tag.selected {
+            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            color: white;
+            border-color: #3D3D3D;
+        }
+
+        .symptom-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1.5px solid #3D3D3D;
+            flex-shrink: 0;
+        }
+
+        .symptom-tag.selected .symptom-dot {
+            background: white;
+            border-color: white;
+        }
+
+        .symptom-tag:nth-child(2) .symptom-dot { background: #EF4444; }
+        .symptom-tag:nth-child(3) .symptom-dot { background: #F97316; }
+        .symptom-tag:nth-child(4) .symptom-dot { background: #3B82F6; }
+        .symptom-tag:nth-child(5) .symptom-dot { background: #FACC15; }
+
+        /* 中央人物区域 */
+        .radial-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .radial-center .character-svg {
+            width: 160px;
+            height: 220px;
+        }
+
+        /* 中央辐射装饰圈 */
+        .radial-ring {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px dashed rgba(34, 197, 94, 0.25);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: radialSpin 30s linear infinite;
+        }
+
+        @keyframes radialSpin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* 右侧数据信息卡片 */
+        .info-panel {
+            flex-shrink: 0;
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-panel-title {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            font-weight: 600;
+            color: #F97316;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+
+        .info-note {
+            background: #FFFDF5;
+            border: 2px solid #3D3D3D;
+            border-radius: 14px;
+            padding: 10px 8px;
+            box-shadow: 2px 2px 0px #3D3D3D;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-note::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 16px,
+                rgba(34, 197, 94, 0.07) 16px,
+                rgba(34, 197, 94, 0.07) 17px
+            );
+            pointer-events: none;
+        }
+
+        .info-note-label {
+            font-size: 10px;
+            color: #999;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-note-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #3D3D3D;
+            position: relative;
+            z-index: 1;
+            margin-top: 2px;
+        }
+
+        .info-note-value.orange { color: #F97316; }
+        .info-note-value.green { color: #22C55E; }
+
+        .info-note-tape {
+            position: absolute;
+            top: -6px;
+            left: 30%;
+            width: 40%;
+            height: 12px;
+            background: rgba(250, 204, 21, 0.5);
+            transform: rotate(-3deg);
+            border-radius: 2px;
+        }
+
+        /* 底部三按钮 */
+        .home-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .home-actions .btn {
+            flex: 1;
+            padding: 12px 8px;
+            font-size: 13px;
             gap: 4px;
         }
 
-        .risk-panel-item {
-            color: #666;
-            padding: 4px 0;
-            border-bottom: 1px solid #F0F0F0;
+        .btn-outline {
+            background: #FFFDF5;
+            color: #3D3D3D;
+            border: 2px solid #3D3D3D;
+            box-shadow: 3px 3px 0px #3D3D3D;
         }
 
-        .risk-panel-item:last-child {
-            border-bottom: none;
+        .btn-outline:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #3D3D3D;
         }
 
-        /* 功能入口卡片 */
-        .feature-cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 14px;
-            padding: 16px 10px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .feature-card:active {
-            transform: scale(0.95);
-        }
-
-        .feature-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .feature-text {
-            font-size: 12px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        .feature-card.active .feature-text {
-            color: #4ECDC4;
-        }
-
-        /* 历史记录列表 */
-        .history-section {
-            margin-top: 20px;
+        /* 近期记录（折叠在底部） */
+        .home-history-mini {
+            margin-top: 16px;
+            position: relative;
+            z-index: 1;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
+            font-family: 'Caveat', cursive;
+            font-size: 22px;
+            font-weight: 700;
+            color: #22C55E;
         }
 
         .section-link {
             font-size: 13px;
-            color: #4ECDC4;
+            color: #F97316;
             cursor: pointer;
+            font-weight: 600;
         }
 
         .history-card {
-            background: white;
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            background: #FFFDF5;
+            border: 2px solid #3D3D3D;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 8px;
+            box-shadow: 2px 3px 0px #3D3D3D;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.15s;
+            position: relative;
+            overflow: hidden;
         }
 
         .history-card:active {
-            transform: scale(0.98);
+            transform: translate(2px, 2px);
+            box-shadow: 0px 1px 0px #3D3D3D;
         }
 
         .history-date {
             font-size: 12px;
             color: #999;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .history-content {
@@ -1156,13 +1327,13 @@
 
         .history-weight {
             font-size: 14px;
-            font-weight: 500;
-            color: #333;
+            font-weight: 700;
+            color: #3D3D3D;
         }
 
         .history-pain {
             font-size: 12px;
-            color: #FF7A45;
+            color: #F97316;
         }
 
         .history-emotion {
@@ -1569,22 +1740,45 @@
              页面1：首页欢迎页
              ============================================ -->
         <div id="page-home" class="page active">
-            <div class="home-header">
-                <div class="home-logo">身体日记 BodyMap</div>
-                <div class="home-tagline">参赛作品演示</div>
-            </div>
-
-            <!-- 风险提示面板 -->
-            <div class="risk-panel">
-                <div class="risk-panel-title">
-                    <span>⚠️</span> 今日风险
+            <!-- 顶部标题栏 -->
+            <div class="home-topbar">
+                <div class="home-title">我的身体状态</div>
+                <div class="risk-capsule" onclick="switchPage('page-record')">
+                    <svg class="risk-capsule-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    今日风险
                 </div>
-                <div class="risk-panel-item">久坐 2小时</div>
-                <div class="risk-panel-item">建议起身活动</div>
             </div>
 
-            <!-- 健康Q版刺猬头男生 -->
-            <div class="home-character">
+            <!-- 中心辐射主体 -->
+            <div class="radial-body">
+                <!-- 左侧症状选择面板 -->
+                <div class="symptom-panel">
+                    <div class="symptom-panel-title">症状</div>
+                    <div class="symptom-tag selected" onclick="selectSymptom(this, '酸痛')">
+                        <span class="symptom-dot"></span>
+                        <span>酸痛</span>
+                    </div>
+                    <div class="symptom-tag" onclick="selectSymptom(this, '紧绷')">
+                        <span class="symptom-dot"></span>
+                        <span>紧绷</span>
+                    </div>
+                    <div class="symptom-tag" onclick="selectSymptom(this, '刺痛')">
+                        <span class="symptom-dot"></span>
+                        <span>刺痛</span>
+                    </div>
+                    <div class="symptom-tag" onclick="selectSymptom(this, '乏力')">
+                        <span class="symptom-dot"></span>
+                        <span>乏力</span>
+                    </div>
+                </div>
+
+                <!-- 中央人物 -->
+                <div class="radial-center">
+                    <div class="radial-ring"></div>
                 <svg viewBox="0 0 200 280" class="character-svg">
                     <!-- 腿部（深棕色裤子） -->
                     <path d="M72,180 L72,245 Q72,252 80,252 L92,252 Q100,252 100,245 L100,195 L100,245 Q100,252 108,252 L120,252 Q128,252 128,245 L128,180 Z"
@@ -1642,26 +1836,53 @@
                     <path d="M75,18 Q82,12 90,16" stroke="#FFE082" stroke-width="2" fill="none" opacity="0.6"/>
                     <path d="M105,10 Q112,8 118,14" stroke="#FFE082" stroke-width="2" fill="none" opacity="0.6"/>
                 </svg>
+                </div>
+
+                <!-- 右侧数据信息卡片 -->
+                <div class="info-panel">
+                    <div class="info-panel-title">数据</div>
+                    <div class="info-note">
+                        <div class="info-note-tape"></div>
+                        <div class="info-note-label">今日久坐</div>
+                        <div class="info-note-value orange">2 小时</div>
+                    </div>
+                    <div class="info-note">
+                        <div class="info-note-tape"></div>
+                        <div class="info-note-label">继续活动</div>
+                        <div class="info-note-value green">5 分钟</div>
+                    </div>
+                </div>
             </div>
 
-            <!-- 功能入口卡片 -->
-            <div class="feature-cards">
-                <div class="feature-card" onclick="switchPage('page-record')">
-                    <div class="feature-icon">📝</div>
-                    <div class="feature-text">今日打卡</div>
-                </div>
-                <div class="feature-card" onclick="switchPage('page-analysis')">
-                    <div class="feature-icon">📊</div>
-                    <div class="feature-text">健康趋势</div>
-                </div>
-                <div class="feature-card" onclick="switchPage('page-report')">
-                    <div class="feature-icon">📄</div>
-                    <div class="feature-text">体检档案</div>
-                </div>
+            <!-- 底部三按钮 -->
+            <div class="home-actions">
+                <button class="btn btn-primary" onclick="switchPage('page-record')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    记录感受
+                </button>
+                <button class="btn btn-warning" onclick="switchPage('page-report')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    上传体检
+                </button>
+                <button class="btn btn-outline" onclick="switchPage('page-analysis')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D3D3D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                    查看趋势
+                </button>
             </div>
 
-            <!-- 历史记录 -->
-            <div class="history-section">
+            <!-- 近期记录（折叠在底部） -->
+            <div class="home-history-mini">
                 <div class="section-header">
                     <div class="section-title">近期记录</div>
                     <div class="section-link" onclick="switchPage('page-history')">查看全部 →</div>
@@ -2639,6 +2860,15 @@
         // ============================================
         // 角色交互逻辑
         // ============================================
+
+        // 首页症状标签选择
+        function selectSymptom(elem, type) {
+            document.querySelectorAll('.symptom-tag').forEach(tag => {
+                tag.classList.remove('selected');
+            });
+            elem.classList.add('selected');
+            showToast('已选择「' + type + '」，点击记录感受去标记部位');
+        }
 
         function focusBodyPart(part, elem) {
             document.querySelectorAll('.body-part-tab').forEach(tab => {
