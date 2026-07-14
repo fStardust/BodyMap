@@ -777,37 +777,6 @@
             margin-bottom: 8px;
         }
 
-        .pain-type-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .pain-type-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 4px;
-            background: #F8F9FA;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .pain-type-item:active {
-            transform: scale(0.92);
-            background: #E8F5F3;
-        }
-
-        .pain-type-icon {
-            font-size: 18px;
-        }
-
-        .pain-type-name {
-            font-size: 11px;
-            color: #666;
-        }
 
         .pain-level-legend {
             display: flex;
@@ -2362,28 +2331,6 @@
             <div class="thermo-map-container">
                 <div class="thermo-map-sidebar">
                     <div class="sidebar-section">
-                        <div class="sidebar-title">不适类型</div>
-                        <div class="pain-type-grid">
-                            <div class="pain-type-item" onclick="openQuickPain('酸痛')">
-                                <div class="pain-type-icon">🔴</div>
-                                <div class="pain-type-name">酸痛</div>
-                            </div>
-                            <div class="pain-type-item" onclick="openQuickPain('紧绷')">
-                                <div class="pain-type-icon">🟡</div>
-                                <div class="pain-type-name">紧绷</div>
-                            </div>
-                            <div class="pain-type-item" onclick="openQuickPain('刺痛')">
-                                <div class="pain-type-icon">🔵</div>
-                                <div class="pain-type-name">刺痛</div>
-                            </div>
-                            <div class="pain-type-item" onclick="openQuickPain('乏力')">
-                                <div class="pain-type-icon">🟢</div>
-                                <div class="pain-type-name">乏力</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sidebar-section">
                         <div class="sidebar-title">痛感等级</div>
                         <div class="pain-level-legend">
                             <div class="level-item">
@@ -3750,10 +3697,6 @@
             container.querySelectorAll('.pain-tooltip').forEach(el => el.remove());
         }
 
-        // 快速标记不适类型（引导用户点击身体部位）
-        function openQuickPain(type) {
-            showToast('已选择「' + type + '」，请点击人体对应部位进行标记');
-        }
 
         // ============================================
         // 保存记录逻辑
