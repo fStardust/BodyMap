@@ -603,7 +603,7 @@
         /* 风险高亮圈标 */
         .risk-highlight-circle {
             position: absolute;
-            border: 3px solid #3B82F6;
+            border: 3px solid #FF7A45;
             border-radius: 50%;
             animation: riskHighlight 1.5s infinite;
             pointer-events: none;
@@ -616,8 +616,14 @@
         }
 
         .legend-dot-risk {
-            background: #3B82F6;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+            background: #FF4757;
+            box-shadow: 0 0 8px rgba(255, 71, 87, 0.8);
+            animation: riskLegendPulse 2s infinite;
+        }
+
+        @keyframes riskLegendPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         /* ============================================
@@ -824,10 +830,11 @@
             flex-shrink: 0;
         }
 
-        .level-0 { background: #16A34A; }
-        .level-1 { background: #22C55E; }
-        .level-2 { background: #F97316; }
-        .level-3 { background: #EF4444; }
+        .level-1 { background: #3B82F6; }
+        .level-2 { background: #22C55E; }
+        .level-3 { background: #FACC15; }
+        .level-4 { background: #F97316; }
+        .level-5 { background: #EF4444; }
 
         .tip-list {
             display: flex;
@@ -1365,7 +1372,7 @@
 
         .detail-status.status-good { background: rgba(34,197,94,0.15); color: #22C55E; }
         .detail-status.status-mild { background: rgba(250,204,21,0.2); color: #CA8A04; }
-        .detail-status.status-risk { background: rgba(59,130,246,0.15); color: #3B82F6; }
+        .detail-status.status-risk { background: rgba(249,115,22,0.15); color: #F97316; }
         .detail-status.status-severe { background: rgba(239,68,68,0.15); color: #EF4444; }
 
         .detail-item {
@@ -2023,18 +2030,24 @@
         }
 
         /* ============================================
-           待关注标签样式
+           风险警示标签样式
            ============================================ */
         .risk-tag {
             position: absolute;
-            background: #3B82F6;
+            background: #FF7A45;
             color: white;
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 10px;
             font-weight: bold;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 2px 8px rgba(255, 122, 69, 0.4);
             transform: rotate(-10deg);
+            animation: riskPulse 1.5s infinite;
+        }
+
+        @keyframes riskPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
     </style>
 </head>
@@ -2177,12 +2190,12 @@
                               class="body-curve curve-limb"/>
                     </g>
 
-                    <!-- 肩部警告三角（待关注） -->
+                    <!-- 肩部警告三角（今日风险） -->
                     <g class="risk-warning-triangle" onclick="showBodyPartDetail('肩颈')" style="cursor: pointer;">
                         <path d="M 120,90 L 140,90 L 130,72 Z"
-                              fill="#3B82F6" stroke="#3E2723" stroke-width="1.5" stroke-linejoin="round"/>
+                              fill="#F97316" stroke="#3E2723" stroke-width="1.5" stroke-linejoin="round"/>
                         <text x="130" y="86" text-anchor="middle" font-size="10" fill="white" font-weight="bold">!</text>
-                        <circle cx="125" cy="95" r="3" fill="#3B82F6" stroke="#3E2723" stroke-width="1"/>
+                        <circle cx="125" cy="95" r="3" fill="#F97316" stroke="#3E2723" stroke-width="1"/>
                     </g>
 
                     <!-- 健康度彩色圆点 - 分布在躯干和四肢 -->
@@ -2190,11 +2203,11 @@
                         <!-- 头部 - 蓝色（正常） -->
                         <circle cx="100" cy="35" r="5" fill="#3B82F6" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-head"
                                 onclick="event.stopPropagation(); showBodyPartDetail('头部')" style="cursor: pointer;"/>
-                        <!-- 左肩 - 蓝色（待关注） -->
-                        <circle cx="75" cy="110" r="6" fill="#3B82F6" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-shoulder"
+                        <!-- 左肩 - 橙色（风险预警） -->
+                        <circle cx="75" cy="110" r="6" fill="#F97316" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-shoulder risk-dot pulse-dot"
                                 onclick="event.stopPropagation(); showBodyPartDetail('肩颈')" style="cursor: pointer;"/>
-                        <!-- 右肩 - 蓝色（待关注） -->
-                        <circle cx="125" cy="110" r="6" fill="#3B82F6" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-shoulder"
+                        <!-- 右肩 - 橙色（风险预警） -->
+                        <circle cx="125" cy="110" r="6" fill="#F97316" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-shoulder risk-dot pulse-dot"
                                 onclick="event.stopPropagation(); showBodyPartDetail('肩颈')" style="cursor: pointer;"/>
                         <!-- 胸口 - 绿色（健康） -->
                         <circle cx="100" cy="130" r="5" fill="#22C55E" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-chest"
@@ -2207,7 +2220,7 @@
                         <!-- 腰部 - 黄色（轻度疲劳） -->
                         <circle cx="85" cy="180" r="4.5" fill="#FACC15" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-waist"
                                 onclick="event.stopPropagation(); showBodyPartDetail('腰')" style="cursor: pointer;"/>
-                        <circle cx="115" cy="182" r="4" fill="#FACC15" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-waist2"
+                        <circle cx="115" cy="182" r="4" fill="#F97316" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-waist2"
                                 onclick="event.stopPropagation(); showBodyPartDetail('腰')" style="cursor: pointer;"/>
                         <!-- 左臂 - 黄色 -->
                         <circle cx="42" cy="140" r="4" fill="#FACC15" stroke="#3E2723" stroke-width="1.5" class="body-dot dot-arm-l"
@@ -2374,20 +2387,24 @@
                         <div class="sidebar-title">痛感等级</div>
                         <div class="pain-level-legend">
                             <div class="level-item">
-                                <div class="level-dot level-0"></div>
-                                <span>0级 - 无痛</span>
-                            </div>
-                            <div class="level-item">
                                 <div class="level-dot level-1"></div>
-                                <span>1-3级 - 有痛感，能正常生活</span>
+                                <span>轻微</span>
                             </div>
                             <div class="level-item">
                                 <div class="level-dot level-2"></div>
-                                <span>4-6级 - 疼痛明显，影响睡眠</span>
+                                <span>轻度</span>
                             </div>
                             <div class="level-item">
                                 <div class="level-dot level-3"></div>
-                                <span>7-10级 - 剧烈疼痛，不能入睡</span>
+                                <span>中度</span>
+                            </div>
+                            <div class="level-item">
+                                <div class="level-dot level-4"></div>
+                                <span>较重</span>
+                            </div>
+                            <div class="level-item">
+                                <div class="level-dot level-5"></div>
+                                <span>严重</span>
                             </div>
                         </div>
                     </div>
@@ -2544,7 +2561,7 @@
                         </div>
                         <div class="legend-item">
                             <span class="legend-dot legend-dot-risk"></span>
-                            <span>待关注区域</span>
+                            <span>高风险区域</span>
                         </div>
                     </div>
                 </div>
