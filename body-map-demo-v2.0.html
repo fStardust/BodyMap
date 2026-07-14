@@ -2746,23 +2746,7 @@
                 
                 <div class="input-group">
                     <div class="input-label">不适类型（可多选）</div>
-                    <div class="checkbox-group">
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="熬夜头痛">熬夜头痛
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="肩颈酸胀">肩颈酸胀
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="腰酸">腰酸
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="刺痛">刺痛
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="乏力">乏力
-                        </label>
-                    </div>
+                    <div class="checkbox-group"></div>
                 </div>
 
                 <div class="slider-group">
@@ -2975,6 +2959,17 @@
                 calculateBMI(e.target.value);
             });
         });
+
+        // ============================================
+        // 各部位常见不适类型数据
+        // ============================================
+        const partPainTypes = {
+            '头部': ['熬夜头痛', '记忆力下降', '深蹲后发昏', '脱发', '头晕', '失眠', '压力大'],
+            '肩颈': ['肩颈酸胀', '落枕', '颈椎僵硬', '手臂发麻', '颈部活动受限', '富贵包'],
+            '胸腹': ['胸闷', '心悸', '胃胀', '胃痛', '反酸', '呼吸困难', '食欲不振'],
+            '腰': ['腰酸', '腰肌劳损', '腰椎间盘突出', '久坐腰痛', '腰部受凉', '闪腰'],
+            '四肢': ['桡骨骨折', '脱臼', '手臂乏力', '臂力下降', '膝盖酸痛', '关节僵硬', '手脚冰凉']
+        };
 
         // ============================================
         // 数据存储与管理
@@ -3563,10 +3558,16 @@
             currentPart = part;
             document.getElementById('pain-modal-title').textContent = '标记身体不适 - ' + part;
             
-            // 清空弹窗内容
-            document.querySelectorAll('input[name="pain-type"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
+            // 动态渲染该部位的不适类型
+            const painTypes = partPainTypes[part] || ['乏力', '酸痛', '刺痛'];
+            const checkboxGroup = document.querySelector('#pain-modal .checkbox-group');
+            checkboxGroup.innerHTML = painTypes.map(type => `
+                <label class="checkbox-item">
+                    <input type="checkbox" name="pain-type" value="${type}">${type}
+                </label>
+            `).join('');
+            
+            // 重置其他表单
             document.getElementById('pain-level').value = 3;
             document.getElementById('pain-level-text').textContent = '3级';
             document.getElementById('pain-note').value = '';
