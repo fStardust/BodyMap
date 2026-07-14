@@ -306,16 +306,29 @@
             border-radius: 24px;
             width: 100%;
             max-width: 380px;
-            padding: 28px;
-            animation: slideUp 0.3s ease;
-            max-height: 80vh;
-            overflow-y: auto;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
             border: 3px solid #3D3D3D;
             box-shadow: 
                 8px 10px 0px #3D3D3D,
                 12px 16px 30px rgba(61, 61, 61, 0.2);
             position: relative;
             overflow: hidden;
+        }
+
+        .modal-body {
+            padding: 28px;
+            padding-bottom: 0;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 28px 28px;
+            border-top: 2px dashed rgba(61, 61, 61, 0.1);
+            background: #FFFDF5;
+            flex-shrink: 0;
         }
 
         .modal::before {
@@ -398,7 +411,7 @@
         .slider {
             width: 100%;
             height: 8px;
-            background: #E8E8E8;
+            background: linear-gradient(to right, #22C55E 0%, #4ADE80 15%, #84CC16 30%, #FACC15 45%, #F97316 60%, #EF4444 100%);
             border-radius: 4px;
             outline: none;
             -webkit-appearance: none;
@@ -409,7 +422,7 @@
             -webkit-appearance: none;
             width: 24px;
             height: 24px;
-            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            background: #FFFFFF;
             border-radius: 50%;
             cursor: pointer;
             transition: transform 0.2s;
@@ -577,8 +590,6 @@
             stroke: white;
             stroke-width: 1.5;
             cursor: pointer;
-            transition: fill 0.2s, transform 0.2s;
-            animation: acupointPulse 2s infinite;
         }
 
         .acupoint-dot-small {
@@ -587,12 +598,6 @@
 
         .acupoint-dot:hover {
             fill: #FF7A45;
-            transform: scale(1.3);
-        }
-
-        @keyframes acupointPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
         }
 
         /* 风险高亮圈标 */
@@ -772,37 +777,6 @@
             margin-bottom: 8px;
         }
 
-        .pain-type-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .pain-type-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 4px;
-            background: #F8F9FA;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .pain-type-item:active {
-            transform: scale(0.92);
-            background: #E8F5F3;
-        }
-
-        .pain-type-icon {
-            font-size: 18px;
-        }
-
-        .pain-type-name {
-            font-size: 11px;
-            color: #666;
-        }
 
         .pain-level-legend {
             display: flex;
@@ -1270,34 +1244,17 @@
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* 身体地图可视化 - 圆点动画 */
+        /* 身体地图可视化 - 圆点样式 */
         .body-dot {
-            transition: transform 0.2s, filter 0.2s;
-            transform-box: fill-box;
-            transform-origin: center;
-        }
-
-        .body-dot:hover {
-            transform: scale(1.4);
-            filter: drop-shadow(0 0 4px currentColor);
+            cursor: pointer;
         }
 
         .body-dot.symptom-active {
-            animation: dotGlow 1.5s ease-in-out infinite;
-        }
-
-        @keyframes dotGlow {
-            0%, 100% { transform: scale(1.1); }
-            50% { transform: scale(1.35); }
+            filter: drop-shadow(0 0 4px currentColor);
         }
 
         .pulse-dot {
-            animation: dotPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes dotPulse {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(249, 115, 22, 0.6)); }
-            50% { transform: scale(1.2); filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.9)); }
+            filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.7));
         }
 
         /* 手绘曲线动画 */
@@ -2374,49 +2331,23 @@
             <div class="thermo-map-container">
                 <div class="thermo-map-sidebar">
                     <div class="sidebar-section">
-                        <div class="sidebar-title">不适类型</div>
-                        <div class="pain-type-grid">
-                            <div class="pain-type-item" onclick="openQuickPain('酸痛')">
-                                <div class="pain-type-icon">🔴</div>
-                                <div class="pain-type-name">酸痛</div>
-                            </div>
-                            <div class="pain-type-item" onclick="openQuickPain('紧绷')">
-                                <div class="pain-type-icon">🟡</div>
-                                <div class="pain-type-name">紧绷</div>
-                            </div>
-                            <div class="pain-type-item" onclick="openQuickPain('刺痛')">
-                                <div class="pain-type-icon">🔵</div>
-                                <div class="pain-type-name">刺痛</div>
-                            </div>
-                            <div class="pain-type-item" onclick="openQuickPain('乏力')">
-                                <div class="pain-type-icon">🟢</div>
-                                <div class="pain-type-name">乏力</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sidebar-section">
                         <div class="sidebar-title">痛感等级</div>
                         <div class="pain-level-legend">
                             <div class="level-item">
                                 <div class="level-dot level-1"></div>
-                                <span>轻微</span>
+                                <span>0级 - 无痛</span>
                             </div>
                             <div class="level-item">
                                 <div class="level-dot level-2"></div>
-                                <span>轻度</span>
-                            </div>
-                            <div class="level-item">
-                                <div class="level-dot level-3"></div>
-                                <span>中度</span>
+                                <span>1-3级 - 有痛感，但能正常生活</span>
                             </div>
                             <div class="level-item">
                                 <div class="level-dot level-4"></div>
-                                <span>较重</span>
+                                <span>4-6级 - 疼痛明显，影响睡眠</span>
                             </div>
                             <div class="level-item">
                                 <div class="level-dot level-5"></div>
-                                <span>严重</span>
+                                <span>7-10级 - 剧烈疼痛，不能入睡</span>
                             </div>
                         </div>
                     </div>
@@ -2765,47 +2696,34 @@
         <!-- ============================================
              弹窗：不适标记弹窗
              ============================================ -->
-        <div id="pain-modal" class="modal-overlay">
+        <div id="pain-modal" class="modal-overlay" onclick="if(event.target === this) closePainModal()">
             <div class="modal">
-                <div class="modal-title" id="pain-modal-title">标记身体不适</div>
-                
-                <div class="input-group">
-                    <div class="input-label">不适类型（可多选）</div>
-                    <div class="checkbox-group">
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="熬夜头痛">熬夜头痛
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="肩颈酸胀">肩颈酸胀
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="腰酸">腰酸
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="刺痛">刺痛
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="pain-type" value="乏力">乏力
-                        </label>
+                <div class="modal-body">
+                    <div class="modal-title" id="pain-modal-title">标记身体不适</div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">不适类型（可多选）</div>
+                        <div class="checkbox-group"></div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>痛感等级</span>
+                            <span id="pain-level-text">3级</span>
+                        </div>
+                        <input type="range" id="pain-level" class="slider" min="0" max="10" value="3">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label">备注说明</div>
+                        <textarea id="pain-note" class="input-field" rows="3" placeholder="输入其他感受..."></textarea>
                     </div>
                 </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>痛感等级</span>
-                        <span id="pain-level-text">3级</span>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="closePainModal()">取消</button>
+                        <button class="btn btn-primary" onclick="confirmPain()">确认标记</button>
                     </div>
-                    <input type="range" id="pain-level" class="slider" min="1" max="5" value="3">
-                </div>
-
-                <div class="input-group">
-                    <div class="input-label">备注说明</div>
-                    <textarea id="pain-note" class="input-field" rows="3" placeholder="输入其他感受..."></textarea>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-secondary" onclick="closePainModal()">取消</button>
-                    <button class="btn btn-primary" onclick="confirmPain()">确认标记</button>
                 </div>
             </div>
         </div>
@@ -2813,18 +2731,21 @@
         <!-- ============================================
              弹窗：异常指标选择弹窗
              ============================================ -->
-        <div id="indicator-modal" class="modal-overlay">
+        <div id="indicator-modal" class="modal-overlay" onclick="if(event.target === this) closeIndicatorModal()">
             <div class="modal">
-                <div class="modal-title">选择异常指标</div>
-                <div class="input-label">请勾选体检报告中的异常项目</div>
-                
-                <div class="indicator-grid" id="indicator-grid">
-                    <!-- 指标项会动态生成 -->
+                <div class="modal-body">
+                    <div class="modal-title">选择异常指标</div>
+                    <div class="input-label">请勾选体检报告中的异常项目</div>
+                    
+                    <div class="indicator-grid" id="indicator-grid">
+                        <!-- 指标项会动态生成 -->
+                    </div>
                 </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-secondary" onclick="closeIndicatorModal()">取消</button>
-                    <button class="btn btn-warning" onclick="confirmIndicator()">生成风险预警</button>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="closeIndicatorModal()">取消</button>
+                        <button class="btn btn-warning" onclick="confirmIndicator()">生成风险预警</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2832,13 +2753,17 @@
         <!-- ============================================
              弹窗：记录详情弹窗
              ============================================ -->
-        <div id="detail-modal" class="modal-overlay">
+        <div id="detail-modal" class="modal-overlay" onclick="if(event.target === this) closeDetailModal()">
             <div class="modal">
-                <div class="modal-title" id="detail-modal-title">记录详情</div>
-                <div class="detail-content" id="detail-content"></div>
-                <div class="btn-group">
-                    <button class="btn btn-warning" onclick="deleteCurrentRecord()">删除记录</button>
-                    <button class="btn btn-primary" onclick="closeDetailModal()">关闭</button>
+                <div class="modal-body">
+                    <div class="modal-title" id="detail-modal-title">记录详情</div>
+                    <div class="detail-content" id="detail-content"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button class="btn btn-warning" onclick="deleteCurrentRecord()">删除记录</button>
+                        <button class="btn btn-primary" onclick="closeDetailModal()">关闭</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2846,9 +2771,10 @@
         <!-- ============================================
              弹窗：报告详情弹窗
              ============================================ -->
-        <div id="report-detail-modal" class="modal-overlay">
+        <div id="report-detail-modal" class="modal-overlay" onclick="if(event.target === this) closeReportDetailModal()">
             <div class="modal">
-                <div class="modal-title" id="report-detail-title">报告详情</div>
+                <div class="modal-body">
+                    <div class="modal-title" id="report-detail-title">报告详情</div>
                 <div class="card" style="margin-bottom: 16px;">
                     <div class="character-container" style="width: 200px; height: 280px; margin: 0 auto; display: block;" id="report-character-detail">
                         <svg viewBox="0 0 200 280" class="character-svg">
@@ -2910,9 +2836,12 @@
                     </div>
                 </div>
                 <div class="detail-content" id="report-detail-content"></div>
+                </div>
+                <div class="modal-footer">
                 <div class="btn-group">
                     <button class="btn btn-warning" onclick="deleteCurrentReport()">删除报告</button>
                     <button class="btn btn-primary" onclick="closeReportDetailModal()">关闭</button>
+                </div>
                 </div>
             </div>
         </div>
@@ -2992,7 +2921,26 @@
             
             // 设置滑块监听
             document.getElementById('pain-level').addEventListener('input', function(e) {
-                document.getElementById('pain-level-text').textContent = e.target.value + '级';
+                const level = parseInt(e.target.value);
+                let text = '';
+                let color = '';
+                
+                if (level === 0) {
+                    text = '0级 - 无痛';
+                    color = '#22C55E';
+                } else if (level <= 3) {
+                    text = level + '级 - 轻度疼痛';
+                    color = level <= 1 ? '#22C55E' : '#84CC16';
+                } else if (level <= 6) {
+                    text = level + '级 - 中度疼痛';
+                    color = level <= 5 ? '#FACC15' : '#F97316';
+                } else {
+                    text = level + '级 - 重度疼痛';
+                    color = level <= 8 ? '#F97316' : '#EF4444';
+                }
+                
+                document.getElementById('pain-level-text').textContent = text;
+                document.getElementById('pain-level-text').style.color = color;
             });
             
             // 设置体重输入监听，自动计算BMI
@@ -3000,6 +2948,17 @@
                 calculateBMI(e.target.value);
             });
         });
+
+        // ============================================
+        // 各部位常见不适类型数据
+        // ============================================
+        const partPainTypes = {
+            '头部': ['熬夜头痛', '记忆力下降', '深蹲后发昏', '脱发', '头晕', '失眠', '压力大'],
+            '肩颈': ['肩颈酸胀', '落枕', '颈椎僵硬', '手臂发麻', '颈部活动受限', '富贵包'],
+            '胸腹': ['胸闷', '心悸', '胃胀', '胃痛', '反酸', '呼吸困难', '食欲不振'],
+            '腰': ['腰酸', '腰肌劳损', '腰椎间盘突出', '久坐腰痛', '腰部受凉', '闪腰'],
+            '四肢': ['桡骨骨折', '脱臼', '手臂乏力', '臂力下降', '膝盖酸痛', '关节僵硬', '手脚冰凉']
+        };
 
         // ============================================
         // 数据存储与管理
@@ -3308,7 +3267,7 @@
             '四肢': '.dot-arm-l, .dot-arm-r, .dot-leg-l, .dot-leg-r'
         };
 
-        // 多选症状切换（保留函数避免报错，但首页不再使用症状面板）
+        // 多选症状切换
         function toggleSymptom(elem, symptom) {
             elem.classList.toggle('selected');
             if (elem.classList.contains('selected')) {
@@ -3342,9 +3301,35 @@
             showToast('已选症状：' + homeSelectedSymptoms.join('、') + '，点击身体点位标记');
         }
 
-        // 点击身体点位 — 直接展示部位详情弹窗
+        // 点击身体点位 — 有症状选中时生成临时记录，否则展示详情
         function showBodyPartDetail(part) {
-            showPartInfoPopup(part);
+            // 如果没有选中任何症状，走详情展示逻辑
+            if (homeSelectedSymptoms.length === 0) {
+                showPartInfoPopup(part);
+                return;
+            }
+
+            // 生成临时记录，复用 currentPainData 的数据结构 { part, types, level, note }
+            const existing = homePendingRecords.findIndex(r => r.part === part);
+            if (existing !== -1) {
+                // 合并症状
+                homeSelectedSymptoms.forEach(symptom => {
+                    if (!homePendingRecords[existing].types.includes(symptom)) {
+                        homePendingRecords[existing].types.push(symptom);
+                    }
+                });
+                showToast('已为「' + part + '」追加症状');
+            } else {
+                homePendingRecords.push({
+                    part: part,
+                    types: [...homeSelectedSymptoms],
+                    level: 3,
+                    note: ''
+                });
+                showToast('已标记「' + part + '」：' + homeSelectedSymptoms.join('、'));
+            }
+
+            renderHomePendingRecords();
         }
 
         // 状态概览标签点击 → 展示对应部位详情
@@ -3445,7 +3430,7 @@
             }, 1500);
         }
 
-        // 原来的部位详情弹窗（无症状选中时使用）
+        // 部位详情弹窗
         function showPartInfoPopup(part) {
             const detail = bodyPartDetailMap[part];
             if (!detail) return;
@@ -3470,6 +3455,7 @@
             detailEl.style.left = pos.x + '%';
             detailEl.style.top = pos.y + '%';
             detailEl.style.transform = 'translate(-50%, 0)';
+            detailEl.style.zIndex = '60';
 
             detailEl.innerHTML = `
                 <div class="detail-part-title">${part}</div>
@@ -3490,7 +3476,7 @@
 
             setTimeout(() => {
                 const closeHandler = (e) => {
-                    if (!detailEl.contains(e.target) && !e.target.closest('.body-dot') && !e.target.closest('.risk-warning-triangle')) {
+                    if (!detailEl.contains(e.target) && !e.target.closest('.body-dot') && !e.target.closest('.risk-warning-triangle') && !e.target.closest('.status-part-tag')) {
                         detailEl.remove();
                         document.removeEventListener('click', closeHandler);
                     }
@@ -3561,12 +3547,19 @@
             currentPart = part;
             document.getElementById('pain-modal-title').textContent = '标记身体不适 - ' + part;
             
-            // 清空弹窗内容
-            document.querySelectorAll('input[name="pain-type"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
+            // 动态渲染该部位的不适类型
+            const painTypes = partPainTypes[part] || ['乏力', '酸痛', '刺痛'];
+            const checkboxGroup = document.querySelector('#pain-modal .checkbox-group');
+            checkboxGroup.innerHTML = painTypes.map(type => `
+                <label class="checkbox-item">
+                    <input type="checkbox" name="pain-type" value="${type}">${type}
+                </label>
+            `).join('');
+            
+            // 重置其他表单
             document.getElementById('pain-level').value = 3;
-            document.getElementById('pain-level-text').textContent = '3级';
+            document.getElementById('pain-level-text').textContent = '3级 - 轻度疼痛';
+            document.getElementById('pain-level-text').style.color = '#84CC16';
             document.getElementById('pain-note').value = '';
             
             // 显示弹窗
@@ -3700,10 +3693,6 @@
             container.querySelectorAll('.pain-tooltip').forEach(el => el.remove());
         }
 
-        // 快速标记不适类型（引导用户点击身体部位）
-        function openQuickPain(type) {
-            showToast('已选择「' + type + '」，请点击人体对应部位进行标记');
-        }
 
         // ============================================
         // 保存记录逻辑
@@ -3828,19 +3817,28 @@
                         fill: true,
                         tension: 0.4,
                         pointRadius: 4,
-                        pointBackgroundColor: '#4ECDC4'
+                        pointHoverRadius: 4,
+                        pointBackgroundColor: '#4ECDC4',
+                        pointBorderWidth: 0,
+                        pointHoverBorderWidth: 0,
+                        pointHitRadius: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: true, position: 'bottom' },
+                        tooltip: { enabled: false }
+                    },
+                    interaction: {
+                        mode: 'none'
+                    },
                     layout: {
                         padding: {
                             bottom: 35
                         }
-                    },
-                    plugins: {
-                        legend: { display: true, position: 'bottom' }
                     },
                     scales: {
                         x: {
@@ -3863,26 +3861,33 @@
                             label: '头部不适',
                             data: headPainCount,
                             backgroundColor: 'rgba(255, 122, 69, 0.6)',
-                            borderRadius: 4
+                            borderRadius: 4,
+                            hoverBackgroundColor: 'rgba(255, 122, 69, 0.6)'
                         },
                         {
                             label: '肩颈不适',
                             data: neckPainCount,
                             backgroundColor: 'rgba(78, 205, 196, 0.6)',
-                            borderRadius: 4
+                            borderRadius: 4,
+                            hoverBackgroundColor: 'rgba(78, 205, 196, 0.6)'
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: true, position: 'bottom' },
+                        tooltip: { enabled: false }
+                    },
+                    interaction: {
+                        mode: 'none'
+                    },
                     layout: {
                         padding: {
                             bottom: 35
                         }
-                    },
-                    plugins: {
-                        legend: { display: true, position: 'bottom' }
                     },
                     scales: {
                         x: {
